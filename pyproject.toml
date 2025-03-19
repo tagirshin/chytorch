@@ -28,14 +28,14 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = '>=3.8,<3.12'
+python = '>=3.10,<4'
 torchtyping = '^0.1.4'
-chython = '^1.70'
+chython = '>=1.70'
 scipy = '^1.10'
-torch = '>=1.8'
+torch = '>=2.0'
 lmdb = {version='^1.4.1', optional = true}
 psycopg2-binary = {version='^2.9', optional = true}
-rdkit = {version = '^2023.9.1', optional = true}
+rdkit = {version = '>=2023.9.1', optional = true}
 pyzstd = {version = '^0.15.9', optional = true}
 
 [tool.poetry.extras]
