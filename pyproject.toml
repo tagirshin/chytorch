@@ -1,6 +1,6 @@
 [tool.poetry]
-name = 'chytorch'
-version = '1.66'
+name = 'chytorch-synplan'
+version = '1.67'
 description = 'Library for modeling molecules and reactions in torch way'
 authors = ['Ramil Nugmanov <nougmanoff@protonmail.com>']
 license = 'MIT'
@@ -13,7 +13,6 @@ classifiers=[
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3 :: Only',
-    'Programming Language :: Python :: 3.8',
     'Topic :: Scientific/Engineering',
     'Topic :: Scientific/Engineering :: Chemistry',
     'Topic :: Scientific/Engineering :: Information Analysis',
@@ -21,18 +20,20 @@ classifiers=[
     'Topic :: Software Development :: Libraries',
     'Topic :: Software Development :: Libraries :: Python Modules'
 ]
-
+packages = [
+    { include = "chytorch" }
+]
 include = [
     {path = 'chytorch/utils/data/molecule/*.pyd', format = 'wheel'},
     {path = 'chytorch/utils/data/molecule/*.so', format = 'wheel'}
 ]
 
 [tool.poetry.dependencies]
-python = '>=3.8,<3.12'
+python = ">=3.10,<3.13"
 torchtyping = '^0.1.4'
-chython = '^1.70'
+chython-synplan = '1.90'
 scipy = '^1.10'
-torch = '>=1.8'
+torch = '>=2.0'
 lmdb = {version='^1.4.1', optional = true}
 psycopg2-binary = {version='^2.9', optional = true}
 rdkit = {version = '^2023.9.1', optional = true}
