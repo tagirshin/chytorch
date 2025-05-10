@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'chytorch-synplan'
-version = '1.67'
+version = '1.68'
 description = 'Library for modeling molecules and reactions in torch way'
 authors = ['Ramil Nugmanov <nougmanoff@protonmail.com>']
 license = 'MIT'

@@ -26,4 +26,4 @@ jobs:
         poetry build -f wheel
     - name: Publish package
       run: |
-        twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --non-interactive --skip-existing dist/*
+        twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --non-interactive --skip-existing --verbose dist/*
