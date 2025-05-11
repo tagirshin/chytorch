@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'chytorch-synplan'
-version = '1.68'
+version = '1.69'
 description = 'Library for modeling molecules and reactions in torch way'
 authors = ['Ramil Nugmanov <nougmanoff@protonmail.com>']
 license = 'MIT'
@@ -31,7 +31,7 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 torchtyping = '^0.1.4'
-chython-synplan = '1.90'
+chython-synplan = '>=1.91'
 scipy = '^1.10'
 torch = '>=2.0'
 lmdb = {version='^1.4.1', optional = true}
