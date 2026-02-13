@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022, 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -24,14 +23,13 @@ from pathlib import Path
 from pickle import load, dump
 from torch import Size
 from torch.utils.data import Dataset
-from typing import Union
 
 
 class LMDBMapper(Dataset):
     """
     Map LMDB key-value storage to the Sequence Dataset of bytestrings.
     """
-    def __init__(self, db: str, *, cache: Union[Path, str, None] = None):
+    def __init__(self, db: str, *, cache: Path | str | None = None):
         """
         Note: mapper internally uses python list for index to bytes-key mapping and can be huge on big datasets.
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'chytorch-synplan'
-version = '1.69'
+version = '1.70'
 description = 'Library for modeling molecules and reactions in torch way'
 authors = ['Ramil Nugmanov <nougmanoff@protonmail.com>']
 license = 'MIT'
@@ -29,14 +29,13 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-torchtyping = '^0.1.4'
+python = ">=3.10,<4"
 chython-synplan = '>=1.91'
 scipy = '^1.10'
-torch = '>=2.0'
+torch = '>=2.1,<3'
 lmdb = {version='^1.4.1', optional = true}
 psycopg2-binary = {version='^2.9', optional = true}
-rdkit = {version = '^2023.9.1', optional = true}
+rdkit = {version = '>=2023.9.1', optional = true}
 pyzstd = {version = '^0.15.9', optional = true}
 
 [tool.poetry.extras]

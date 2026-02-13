@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2021-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -22,13 +21,12 @@
 #
 from torch import Tensor, nn
 from torch.nn import Dropout, GELU, LayerNorm, Module, SiLU
-from typing import Tuple, Optional, Type
 from warnings import warn
 from .attention import GraphormerAttention
 from ..lora import Linear
 
 
-def _update(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+def _update(module, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
     if prefix + 'linear1.weight' in state_dict:
         warn('fixed chytorch<1.64 checkpoint', DeprecationWarning)
         state_dict[prefix + 'mlp.linear1.weight'] = state_dict.pop(prefix + 'linear1.weight')
@@ -84,8 +82,8 @@ class EncoderLayer(Module):
         attention and feedforward operations, respectively. Otherwise, it's done after.
     """
     def __init__(self, d_model, nhead, dim_feedforward, dropout=0.1, activation=GELU, layer_norm_eps=1e-5,
-                 norm_first: bool = False, attention: Type[Module] = GraphormerAttention, mlp: Type[Module] = MLP,
-                 norm_layer: Type[Module] = LayerNorm, projection_bias: bool = True, ff_bias: bool = True):
+                 norm_first: bool = False, attention: type[Module] = GraphormerAttention, mlp: type[Module] = MLP,
+                 norm_layer: type[Module] = LayerNorm, projection_bias: bool = True, ff_bias: bool = True):
         super().__init__()
         self.self_attn = attention(d_model, nhead, dropout, projection_bias)
         self.mlp = mlp(d_model, dim_feedforward, dropout, activation, ff_bias)
@@ -95,11 +93,11 @@ class EncoderLayer(Module):
         self.dropout1 = Dropout(dropout)
         self.dropout2 = Dropout(dropout)
         self.norm_first = norm_first
-        self._register_load_state_dict_pre_hook(_update)
+        self.register_load_state_dict_pre_hook(_update)
 
-    def forward(self, x: Tensor, attn_mask: Optional[Tensor], *,
+    def forward(self, x: Tensor, attn_mask: Tensor | None, *,
                 need_embedding: bool = True, need_weights: bool = False,
-                **kwargs) -> Tuple[Optional[Tensor], Optional[Tensor]]:
+                **kwargs) -> tuple[Tensor | None, Tensor | None]:
         nx = self.norm1(x) if self.norm_first else x  # pre-norm or post-norm
         e, a = self.self_attn(nx, attn_mask, need_weights=need_weights, **kwargs)
 

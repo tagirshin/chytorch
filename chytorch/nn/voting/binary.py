@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022, 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -21,11 +20,9 @@
 # SOFTWARE.
 #
 from math import nan
-from torch import sigmoid, no_grad
+from torch import Tensor, sigmoid, no_grad
 from torch.nn import GELU
 from torch.nn.functional import binary_cross_entropy_with_logits
-from torchtyping import TensorType
-from typing import Union, Optional
 from ._kfold import k_fold_mask
 from .regressor import VotingRegressor
 
@@ -35,15 +32,15 @@ class BinaryVotingClassifier(VotingRegressor):
     Simple two-layer perceptron with layer normalization and dropout adopted for effective
     ensemble binary classification tasks.
     """
-    def __init__(self, ensemble: int = 10, output: int = 1, hidden: int = 256, input: Optional[int] = None,
+    def __init__(self, ensemble: int = 10, output: int = 1, hidden: int = 256, input: int | None = None,
                  dropout: float = .5, activation=GELU, layer_norm_eps: float = 1e-5,
                  loss_function=binary_cross_entropy_with_logits, norm_first: bool = False):
         super().__init__(ensemble, output, hidden, input, dropout, activation,
                          layer_norm_eps, loss_function, norm_first)
 
     @no_grad()
-    def predict(self, x: TensorType['batch', 'embedding'], *,
-                k_fold: Optional[int] = None) -> Union[TensorType['batch', int], TensorType['batch', 'output', int]]:
+    def predict(self, x: Tensor, *,
+                k_fold: int | None = None) -> Tensor:
         """
         Average class prediction
 
@@ -53,9 +50,8 @@ class BinaryVotingClassifier(VotingRegressor):
         return (self.predict_proba(x, k_fold=k_fold) > .5).long()
 
     @no_grad()
-    def predict_proba(self, x: TensorType['batch', 'embedding'], *,
-                      k_fold: Optional[int] = None) -> Union[TensorType['batch', float],
-                                                             TensorType['batch', 'output', float]]:
+    def predict_proba(self, x: Tensor, *,
+                      k_fold: int | None = None) -> Tensor:
         """
         Average probability
 

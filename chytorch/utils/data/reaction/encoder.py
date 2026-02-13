@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2021-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -26,23 +25,24 @@ from torch import IntTensor, cat, zeros, int32, Size, eye
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 from torch.utils.data._utils.collate import default_collate_fn_map
-from torchtyping import TensorType
-from typing import Sequence, Union, NamedTuple
+from torch import Tensor
+from typing import NamedTuple
+from collections.abc import Sequence
 from ..molecule import MoleculeDataset
 
 
 class ReactionEncoderDataPoint(NamedTuple):
-    atoms: TensorType['atoms', int]
-    neighbors: TensorType['atoms', int]
-    distances: TensorType['atoms', 'atoms', int]
-    roles: TensorType['atoms', int]
+    atoms: Tensor
+    neighbors: Tensor
+    distances: Tensor
+    roles: Tensor
 
 
 class ReactionEncoderDataBatch(NamedTuple):
-    atoms: TensorType['batch', 'atoms', int]
-    neighbors: TensorType['batch', 'atoms', int]
-    distances: TensorType['batch', 'atoms', 'atoms', int]
-    roles: TensorType['batch', 'atoms', int]
+    atoms: Tensor
+    neighbors: Tensor
+    distances: Tensor
+    roles: Tensor
 
     def to(self, *args, **kwargs):
         return ReactionEncoderDataBatch(*(x.to(*args, **kwargs) for x in self))
@@ -80,7 +80,7 @@ default_collate_fn_map[ReactionEncoderDataPoint] = collate_encoded_reactions  # 
 
 
 class ReactionEncoderDataset(Dataset):
-    def __init__(self, reactions: Sequence[Union[ReactionContainer, bytes]], *, max_distance: int = 10,
+    def __init__(self, reactions: Sequence[ReactionContainer | bytes], *, max_distance: int = 10,
                  max_neighbors: int = 14, add_cls: bool = True, add_molecule_cls: bool = True,
                  hide_molecule_cls: bool = True, unpack: bool = False, distance_cutoff=None, compressed: bool = True):
         """

@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         build_target:
           - name: "Windows AMD64"
             os_runner: windows-latest
@@ -34,13 +34,13 @@ jobs:
             os_runner: ubuntu-latest
             python_host_arch: x64
             build_type: manylinux
-            manylinux_image: "quay.io/pypa/manylinux2014_x86_64"
+            manylinux_image: "quay.io/pypa/manylinux_2_28_x86_64"
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }} on runner
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.build_target.python_host_arch }}
@@ -75,6 +75,7 @@ jobs:
           /workdir/.github/workflows/build_manylinux.sh "${{ matrix.python-version }}" "/workdir"
 
     - name: Publish package
+      if: github.event_name == 'release'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

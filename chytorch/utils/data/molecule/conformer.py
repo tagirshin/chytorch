@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -28,20 +27,21 @@ from torch import IntTensor, Size, zeros, ones as t_ones, int32 as t_int32, eye
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 from torch.utils.data._utils.collate import default_collate_fn_map
-from torchtyping import TensorType
-from typing import Sequence, Tuple, Union, NamedTuple
+from torch import Tensor
+from typing import NamedTuple
+from collections.abc import Sequence
 
 
 class ConformerDataPoint(NamedTuple):
-    atoms: TensorType['atoms', int]
-    hydrogens: TensorType['atoms', int]
-    distances: TensorType['atoms', 'atoms', int]
+    atoms: Tensor
+    hydrogens: Tensor
+    distances: Tensor
 
 
 class ConformerDataBatch(NamedTuple):
-    atoms: TensorType['batch', 'atoms', int]
-    hydrogens: TensorType['batch', 'atoms', int]
-    distances: TensorType['batch', 'atoms', 'atoms', int]
+    atoms: Tensor
+    hydrogens: Tensor
+    distances: Tensor
 
     def to(self, *args, **kwargs):
         return ConformerDataBatch(*(x.to(*args, **kwargs) for x in self))
@@ -79,7 +79,7 @@ default_collate_fn_map[ConformerDataPoint] = collate_conformers  # add auto_coll
 
 
 class ConformerDataset(Dataset):
-    def __init__(self, molecules: Sequence[Union[MoleculeContainer, Tuple[ndarray, ndarray, ndarray]]], *,
+    def __init__(self, molecules: Sequence[MoleculeContainer | tuple[ndarray, ndarray, ndarray]], *,
                  short_cutoff: float = .9, long_cutoff: float = 5., precision: float = .05,
                  add_cls: bool = True, unpack: bool = True, xyz: bool = True, noisy_distance: bool = False):
         """

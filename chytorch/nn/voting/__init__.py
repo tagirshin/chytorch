@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022, 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #

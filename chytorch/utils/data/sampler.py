@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -27,7 +26,7 @@ from itertools import chain, islice
 from math import ceil
 from torch import Generator, randperm
 from torch.utils.data import Sampler
-from typing import Optional, List, Iterator
+from collections.abc import Iterator
 from .molecule import MoleculeDataset
 
 
@@ -69,9 +68,9 @@ def _indices(order, sizes, batch_size):
     return indices
 
 
-class StructureSampler(Sampler[List[int]]):
+class StructureSampler(Sampler[list[int]]):
     def __init__(self, dataset: MoleculeDataset, batch_size: int, shuffle: bool = True, seed: int = 0, *,
-                 sizes: Optional[List[int]] = None):
+                 sizes: list[int] | None = None):
         """
         Sample molecules locally grouped by size to reduce idle calculations on paddings.
 
@@ -88,7 +87,7 @@ class StructureSampler(Sampler[List[int]]):
         self.seed = seed
         self.sizes = _build_index(dataset, sizes)
 
-    def __iter__(self) -> Iterator[List[int]]:
+    def __iter__(self) -> Iterator[list[int]]:
         if self.shuffle:
             generator = Generator()
             generator.manual_seed(self.seed)
@@ -104,10 +103,10 @@ class StructureSampler(Sampler[List[int]]):
         return ceil(len(self.sizes) / self.batch_size)
 
 
-class DistributedStructureSampler(Sampler[List[int]]):
-    def __init__(self, dataset: MoleculeDataset, batch_size: int, num_replicas: Optional[int] = None,
-                 rank: Optional[int] = None, shuffle: bool = True, seed: int = 0, *,
-                 sizes: Optional[List[int]] = None):
+class DistributedStructureSampler(Sampler[list[int]]):
+    def __init__(self, dataset: MoleculeDataset, batch_size: int, num_replicas: int | None = None,
+                 rank: int | None = None, shuffle: bool = True, seed: int = 0, *,
+                 sizes: list[int] | None = None):
         """
         Sample molecules locally grouped by size to reduce idle calculations on paddings.
 
@@ -142,7 +141,7 @@ class DistributedStructureSampler(Sampler[List[int]]):
     def __len__(self) -> int:
         return ceil(self.num_samples / self.batch_size)
 
-    def __iter__(self) -> Iterator[List[int]]:
+    def __iter__(self) -> Iterator[list[int]]:
         if self.shuffle:
             generator = Generator()
             generator.manual_seed(self.seed + self.epoch)

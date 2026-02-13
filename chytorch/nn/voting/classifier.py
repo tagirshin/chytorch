@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022, 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -24,8 +23,6 @@ from math import nan
 from torch import bmm, no_grad, Tensor
 from torch.nn import Dropout, GELU, LayerNorm, LazyLinear, Linear, Module
 from torch.nn.functional import cross_entropy, softmax
-from torchtyping import TensorType
-from typing import Optional, Union
 from ._kfold import k_fold_mask
 
 
@@ -34,7 +31,7 @@ class VotingClassifier(Module):
     Simple two-layer perceptron with layer normalization and dropout adopted for effective ensemble classification.
     """
     def __init__(self, ensemble: int = 10, output: int = 1, n_classes: int = 2, hidden: int = 256,
-                 input: Optional[int] = None, dropout: float = .5, activation=GELU, layer_norm_eps: float = 1e-5,
+                 input: int | None = None, dropout: float = .5, activation=GELU, layer_norm_eps: float = 1e-5,
                  loss_function=cross_entropy, norm_first: bool = False):
         """
         :param ensemble: number of predictive heads per output
@@ -83,9 +80,9 @@ class VotingClassifier(Module):
             return x.view(-1, self._output, self._ensemble, self._n_classes)  # B x O x E x C
         return x  # B x E x C
 
-    def loss(self, x: TensorType['batch', 'embedding'],
-             y: Union[TensorType['batch', 1, int], TensorType['batch', 'output', int]],
-             k_fold: Optional[int] = None, ignore_index: int = -100) -> Tensor:
+    def loss(self, x: Tensor,
+             y: Tensor,
+             k_fold: int | None = None, ignore_index: int = -100) -> Tensor:
         """
         Apply loss function to ensemble of predictions.
 
@@ -120,8 +117,8 @@ class VotingClassifier(Module):
         return self.loss_function(p, y)
 
     @no_grad()
-    def predict(self, x: TensorType['batch', 'embedding'], *,
-                k_fold: Optional[int] = None) -> Union[TensorType['batch', int], TensorType['batch', 'output', int]]:
+    def predict(self, x: Tensor, *,
+                k_fold: int | None = None) -> Tensor:
         """
         Average class prediction
 
@@ -130,9 +127,8 @@ class VotingClassifier(Module):
         return self.predict_proba(x, k_fold=k_fold).argmax(-1)  # B or B x O
 
     @no_grad()
-    def predict_proba(self, x: TensorType['batch', 'embedding'], *,
-                      k_fold: Optional[int] = None) -> Union[TensorType['batch', 'classes', float],
-                                                             TensorType['batch', 'output', 'classes', float]]:
+    def predict_proba(self, x: Tensor, *,
+                      k_fold: int | None = None) -> Tensor:
         """
         Average probability
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022, 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -24,7 +23,7 @@ from functools import lru_cache
 from torch import ones, zeros
 
 
-@lru_cache()
+@lru_cache
 def k_fold_mask(k_fold, ensemble, batch_size, train, device=None):
     """
     :param k_fold: number of folds

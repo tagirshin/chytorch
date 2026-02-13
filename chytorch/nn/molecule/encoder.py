@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2021-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -21,9 +20,8 @@
 # SOFTWARE.
 #
 from itertools import repeat
+from torch import Tensor
 from torch.nn import GELU, Module, ModuleList, LayerNorm
-from torchtyping import TensorType
-from typing import Tuple, Optional, List
 from warnings import warn
 from ._embedding import EmbeddingBag
 from ..lora import Embedding
@@ -31,7 +29,7 @@ from ..transformer import EncoderLayer
 from ...utils.data import MoleculeDataBatch
 
 
-def _update(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+def _update(module, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
     if prefix + 'centrality_encoder.weight' in state_dict:
         warn('fixed chytorch<1.37 checkpoint', DeprecationWarning)
         state_dict[prefix + 'neighbors_encoder.weight'] = state_dict.pop(prefix + 'centrality_encoder.weight')
@@ -109,12 +107,11 @@ class MoleculeEncoder(Module):
             self.layers = ModuleList(EncoderLayer(d_model, nhead, dim_feedforward, dropout, activation,
                                                   layer_norm_eps, norm_first, projection_bias=projection_bias,
                                                   ff_bias=ff_bias) for _ in range(num_layers))
-        self._register_load_state_dict_pre_hook(_update)
+        self.register_load_state_dict_pre_hook(_update)
 
     def forward(self, batch: MoleculeDataBatch, /, *,
-                cache: Optional[List[Tuple[TensorType['batch', 'atoms+conditions', 'embedding'],
-                                           TensorType['batch', 'atoms+conditions', 'embedding']]]] = None) -> \
-            TensorType['batch', 'atoms', 'embedding']:
+                cache: list[tuple[Tensor, Tensor]] | None = None) -> \
+            Tensor:
         """
         Use 0 for padding.
         Atoms should be coded by atomic numbers + 2.

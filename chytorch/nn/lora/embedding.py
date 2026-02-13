@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -24,14 +23,13 @@ from math import inf
 from torch import empty, no_grad, addmm, Tensor
 from torch.nn import Embedding as tEmbedding, Parameter, init
 from torch.nn.functional import embedding
-from typing import Optional
 
 
 class Embedding(tEmbedding):
     """
     LoRA wrapped Embedding layer.
     """
-    def __init__(self, *args, neg_inf_idx: Optional[int] = None, **kwargs):
+    def __init__(self, *args, neg_inf_idx: int | None = None, **kwargs):
         """
         :param neg_inf_idx: -inf frozen embedding vector
 

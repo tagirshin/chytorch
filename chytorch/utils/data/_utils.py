@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022, 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -23,7 +22,8 @@
 from random import shuffle
 from torch import Size
 from torch.utils.data import Dataset
-from typing import List, Sequence, TypeVar
+from typing import TypeVar
+from collections.abc import Sequence
 from .lmdb import LMDBMapper
 from .unpack import Decompress
 
@@ -102,7 +102,7 @@ def load_lmdb_zstd_dict(path, size=4, order='big', key=b'\xff\xff\xff\xff'):
     return dc
 
 
-class SizedList(List):
+class SizedList(list):
     """
     List with tensor-like size method.
     """
@@ -137,7 +137,7 @@ class ShuffledList(Dataset):
     def __init__(self, data: Sequence[Sequence[element]]):
         self.data = data
 
-    def __getitem__(self, item: int) -> List[element]:
+    def __getitem__(self, item: int) -> list[element]:
         x = list(self.data[item])
         shuffle(x)
         return x

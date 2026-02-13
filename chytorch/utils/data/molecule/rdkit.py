@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -24,7 +23,7 @@ from numpy import array
 from random import choice
 from torch import Size
 from torch.utils.data import Dataset
-from typing import Sequence, Optional, Dict
+from collections.abc import Sequence
 
 
 def generate(smiles, num_conf=10, max_attempts=100, prune=.2):
@@ -47,7 +46,7 @@ class RDKitConformerDataset(Dataset):
     Random conformer generator dataset
     """
     def __init__(self, molecules: Sequence[str], num_conf=10, max_attempts=100, prune=.2,
-                 cache: Optional[Dict[int, Sequence]] = None):
+                 cache: dict[int, Sequence] | None = None):
         """
         :param molecules: list of molecules' SMILES strings
         :param num_conf: numConfs parameter in EmbedMultipleConfs

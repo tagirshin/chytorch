@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -23,7 +22,8 @@
 from math import floor
 from torch import Size
 from torch.utils.data import Dataset
-from typing import Sequence, List, TypeVar
+from typing import TypeVar
+from collections.abc import Sequence
 
 
 element = TypeVar('element')
@@ -48,7 +48,7 @@ class ProductDataset(Dataset):
             factor *= s
         self._size = factor
 
-    def __getitem__(self, item: int) -> List[element]:
+    def __getitem__(self, item: int) -> list[element]:
         if item < 0:
             item += self._size
         if item < 0 or item >= self._size:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2023, 2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -26,12 +25,11 @@ from pickle import loads
 from struct import Struct
 from torch import Tensor, tensor, float32, Size, frombuffer
 from torch.utils.data import Dataset
-from typing import List, Tuple
 from zlib import decompress
 
 
 class StructUnpack(Dataset):
-    def __init__(self, data: List[bytes], format_spec: str, dtype=float32, shape: Tuple[int, ...] = None):
+    def __init__(self, data: list[bytes], format_spec: str, dtype=float32, shape: tuple[int, ...] = None):
         """
         Unpack python.struct packed tensors to 1d-tensors.
         Useful in case of highly compressed data.
@@ -66,7 +64,7 @@ class StructUnpack(Dataset):
 
 
 class TensorUnpack(Dataset):
-    def __init__(self, data: List[bytes], dtype=float32, shape: Tuple[int, ...] = None):
+    def __init__(self, data: list[bytes], dtype=float32, shape: tuple[int, ...] = None):
         """
         Unpack raw tensor byte buffers to 1d-tensors.
 
@@ -96,7 +94,7 @@ class TensorUnpack(Dataset):
 
 
 class PickleUnpack(Dataset):
-    def __init__(self, data: List[bytes]):
+    def __init__(self, data: list[bytes]):
         """
         Unpack python-pickled data.
 
@@ -119,7 +117,7 @@ class PickleUnpack(Dataset):
 
 
 class JsonUnpack(Dataset):
-    def __init__(self, data: List[str]):
+    def __init__(self, data: list[str]):
         """
         Unpack Json data.
 
@@ -142,7 +140,7 @@ class JsonUnpack(Dataset):
 
 
 class Decompress(Dataset):
-    def __init__(self, data: List[bytes], method: str = 'zlib', zdict: bytes = None):
+    def __init__(self, data: list[bytes], method: str = 'zlib', zdict: bytes = None):
         """
         Decompress zipped data.
 
@@ -181,7 +179,7 @@ class Decompress(Dataset):
 
 
 class Decode(Dataset):
-    def __init__(self, data: List[bytes], encoding: str = 'utf8'):
+    def __init__(self, data: list[bytes], encoding: str = 'utf8'):
         """
         Bytes to string decoder dataset
 

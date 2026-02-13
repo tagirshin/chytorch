@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2022-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -22,11 +21,10 @@
 #
 from torch import Tensor
 from torch.nn import Module
-from typing import Tuple, Union
 
 
 class Slicer(Module):
-    def __init__(self, *slc: Union[int, slice, Tuple[int, ...]]):
+    def __init__(self, *slc: int | slice | tuple[int, ...]):
         """
         Slice input tensor. For use with Sequential.
 

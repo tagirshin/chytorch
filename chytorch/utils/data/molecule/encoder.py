@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2021-2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -28,21 +27,21 @@ from torch import IntTensor, Size, int32, ones, zeros, eye, empty, triu, Tensor,
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 from torch.utils.data._utils.collate import default_collate_fn_map
-from torchtyping import TensorType
-from typing import Sequence, Union, NamedTuple, Tuple
+from typing import NamedTuple
+from collections.abc import Sequence
 from zlib import decompress
 
 
 class MoleculeDataPoint(NamedTuple):
-    atoms: TensorType['atoms', int]
-    neighbors: TensorType['atoms', int]
-    distances: TensorType['atoms', 'atoms', int]
+    atoms: Tensor
+    neighbors: Tensor
+    distances: Tensor
 
 
 class MoleculeDataBatch(NamedTuple):
-    atoms: TensorType['batch', 'atoms', int]
-    neighbors: TensorType['batch', 'atoms', int]
-    distances: TensorType['batch', 'atoms', 'atoms', int]
+    atoms: Tensor
+    neighbors: Tensor
+    distances: Tensor
 
     def to(self, *args, **kwargs):
         return MoleculeDataBatch(*(x.to(*args, **kwargs) for x in self))
@@ -90,9 +89,8 @@ default_collate_fn_map[MoleculeDataPoint] = collate_molecules  # add auto_collat
 
 
 class MoleculeDataset(Dataset):
-    def __init__(self, molecules: Sequence[Union[MoleculeContainer, bytes]], *,
-                 add_cls: bool = True, cls_token: Union[int, Tuple[int, ...], Sequence[int], Sequence[Tuple[int, ...]],
-                     TensorType['cls', int], TensorType['dataset', 1, int], TensorType['dataset', 'cls', int]] = 1,
+    def __init__(self, molecules: Sequence[MoleculeContainer | bytes], *,
+                 add_cls: bool = True, cls_token: int | tuple[int, ...] | Sequence[int] | Sequence[tuple[int, ...]] | Tensor = 1,
                  max_distance: int = 10, max_neighbors: int = 14,
                  attention_schema: str = 'bert', components_attention: bool = True,
                  unpack: bool = False, compressed: bool = True, distance_cutoff=None):

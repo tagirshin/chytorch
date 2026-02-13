@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2023, 2024 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -24,12 +23,11 @@ from math import sqrt
 from torch import softmax, cat, Tensor
 from torch.nn import Module
 from torch.nn.functional import dropout
-from typing import Optional, Tuple
 from warnings import warn
 from ...lora import Linear
 
 
-def _update_unpacked(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+def _update_unpacked(module, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
     if prefix + 'in_proj_weight' in state_dict:
         warn('fixed chytorch<1.44 checkpoint', DeprecationWarning)
         state_dict[prefix + 'qkv_proj.weight'] = state_dict.pop(prefix + 'in_proj_weight')
@@ -50,7 +48,7 @@ def _update_unpacked(state_dict, prefix, local_metadata, strict, missing_keys, u
             state_dict[prefix + 'v_proj.bias'] = v_b
 
 
-def _update_packed(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+def _update_packed(module, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
     if prefix + 'in_proj_weight' in state_dict:
         warn('fixed chytorch<1.44 checkpoint', DeprecationWarning)
         state_dict[prefix + 'o_proj.weight'] = state_dict.pop(prefix + 'out_proj.weight')
@@ -94,15 +92,15 @@ class GraphormerAttention(Module):
             self.q_proj = Linear(embed_dim, embed_dim, bias=bias)
             self.k_proj = Linear(embed_dim, embed_dim, bias=bias)
             self.v_proj = Linear(embed_dim, embed_dim, bias=bias)
-            self._register_load_state_dict_pre_hook(_update_unpacked)
+            self.register_load_state_dict_pre_hook(_update_unpacked)
         else:  # packed projection
             self.qkv_proj = Linear(embed_dim, 3 * embed_dim, bias=bias)
-            self._register_load_state_dict_pre_hook(_update_packed)
+            self.register_load_state_dict_pre_hook(_update_packed)
         self.o_proj = Linear(embed_dim, embed_dim, bias=bias)
 
     def forward(self, x: Tensor, attn_mask: Tensor, *,
-                cache: Optional[Tuple[Tensor, Tensor]] = None,
-                need_weights: bool = False) -> Tuple[Tensor, Optional[Tensor]]:
+                cache: tuple[Tensor, Tensor] | None = None,
+                need_weights: bool = False) -> tuple[Tensor, Tensor | None]:
         if self.separate_proj:
             q = self.q_proj(x)  # BxTxH*E
             k = self.k_proj(x)  # BxSxH*E (KV seq len can differ from tgt_len with enabled cache trick)

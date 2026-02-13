@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2023 Ramil Nugmanov <nougmanoff@protonmail.com>
 #
@@ -23,12 +22,12 @@
 from chython import MoleculeContainer, ReactionContainer, smiles
 from torch import Size
 from torch.utils.data import Dataset
-from typing import Dict, Union, Sequence, Optional, Type
+from collections.abc import Sequence
 
 
 class SMILESDataset(Dataset):
-    def __init__(self, data: Sequence[str], *, canonicalize: bool = False, cache: Optional[Dict[int, bytes]] = None,
-                 dtype: Union[Type[MoleculeContainer], Type[ReactionContainer]] = MoleculeContainer,
+    def __init__(self, data: Sequence[str], *, canonicalize: bool = False, cache: dict[int, bytes] | None = None,
+                 dtype: type[MoleculeContainer] | type[ReactionContainer] = MoleculeContainer,
                  unpack: bool = True, ignore_stereo: bool = True, ignore_bad_isotopes: bool = False,
                  keep_implicit: bool = False, ignore_carbon_radicals: bool = False):
         """
@@ -56,7 +55,7 @@ class SMILESDataset(Dataset):
         self.keep_implicit = keep_implicit
         self.ignore_carbon_radicals = ignore_carbon_radicals
 
-    def __getitem__(self, item: int) -> Union[MoleculeContainer, ReactionContainer, bytes]:
+    def __getitem__(self, item: int) -> MoleculeContainer | ReactionContainer | bytes:
         if self.cache is not None and item in self.cache:
             s = self.cache[item]
             if self.unpack:
